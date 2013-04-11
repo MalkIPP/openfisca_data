@@ -6,8 +6,8 @@
 RVersion =R.Version()
 if (RVersion$os != "linux-gnu") {
   # Non linux OS ie Windows
-  outputDir <- "C:/Users/Utilisateur/Documents/Data/R"} else { 
+  outputDir <- "C:/Users/Utilisateur/Documents/Data/R/"} else { 
   # linux OS
-  outputDir <- "/home/mylogin/mydata"} 
+  outputDir <- "/home/mylogin/mydata/"} 
 
 

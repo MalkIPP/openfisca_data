@@ -67,11 +67,16 @@ load(menm)
 menagem <- rename(menagem, c("ident"="idmen","loym"="loyer"))
 menagem$cstotpragr <- floor(menagem$cstotpr/10)
 
-vars <- c("loyer", "tu99", "pol99", "tau99", "reg","idmen", "so", "wprm", "typmen15", "nbinde","ddipl","cstotpragr","champm","zthabm")
 
-# 2008 tau99 removed vars <- c("loyer", "tu99", "pol99", "reg","idmen", "so", "wprm", "typmen15", "nbinde","ddipl","cstotpragr","champm","zthabm")
+
+# 2008 tau99 removed TODO: check ! and check incidence
+if (year == "2008") {
+ vars <- c("loyer", "tu99", "pol99", "reg","idmen", "so", "wprm", "typmen15", "nbinde","ddipl","cstotpragr","champm","zthabm")
+} else {
+  vars <- c("loyer", "tu99", "pol99", "tau99", "reg","idmen", "so", "wprm", "typmen15", "nbinde","ddipl","cstotpragr","champm","zthabm")
+}
+
 famille_vars <- c("m_afeamam", "m_agedm","m_clcam", "m_colcam", 'm_mgamm', 'm_mgdomm')
-
 if ("naf16pr" %in% names(menagem)) {
   naf16pr <- factor(menagem$naf16pr)
   levels(naf16pr) <-  0:16
@@ -116,11 +121,16 @@ loyersMenages <- within(loyersMenages, {
 })
 
 
+
 # Pb avec ddipl, pas de modalités 2: on décale les chaps >=3
-# On met les non renseignés à sans diplome (modalité 7)
-#table(loyersMenages$ddipl, useNA="ifany")
-loyersMenages[is.na(loyersMenages$ddipl), "ddipl"] <- 7
+# Cependant on fait cela après avoir fait les traitement suivants
+table(loyersMenages$ddipl, useNA="ifany")
+# On convertit les ddipl en numeric
 loyersMenages$ddipl <- as.numeric(loyersMenages$ddipl)
+table(loyersMenages$ddipl, useNA="ifany")
+#   On met les non renseignés ie, NA et "" à sans diplome (modalité 7)
+loyersMenages[is.na(loyersMenages$ddipl), "ddipl"] <- 7
+
 loyersMenages[loyersMenages$ddipl>1, "ddipl"] <- loyersMenages$ddipl[loyersMenages$ddipl>1]-1
 
 
@@ -151,9 +161,7 @@ rm(menagem,final)
 saveTmp(final2, file= "final2.Rdata")
 
 loadTmp("final2.Rdata")
-
 names(final2)
-
 print_id(final2)
 
 
