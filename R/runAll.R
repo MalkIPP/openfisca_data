@@ -5,6 +5,8 @@ library(Hmisc)
 library(reshape)
 library(car)
 
+# SET THE WORKING DIRECTORY TO FILE LOCATION 
+
 # Starting the logging
 log_connection <- file("erf_log.txt", open="wt")
 sink(log_connection, split=TRUE)
@@ -17,8 +19,8 @@ source("common.R")
 #  year1 = '2010'
 
 date()
-year = '2006'
-year1 = '2007'
+year = '2008'
+year1 = '2009'
 
 source('0000_path_config.R')
 
