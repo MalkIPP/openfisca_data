@@ -1,10 +1,10 @@
 ##***********************************************************************/
-message('08_famille: derniers réglages')
+message('08_final: derniers réglages')
 ##***********************************************************************/
 
 
 loadTmp("final.Rdata")
-# On d?finit comme c?libataires les individus dont on n'a pas retrouv? la d?claration
+# On définit comme célibataires les individus dont on n'a pas retrouvé la déclaration
 final$statmarit[is.na(final$statmarit)] <- 2
 table(final$statmarit, useNA='ifany')
 
@@ -22,6 +22,7 @@ levels(final$quifoy) <- list("0"='vous',
                              "9"='pac8')
 
 final$quifoy <- as.numeric(levels(final$quifoy)[final$quifoy])
+
 # recode quimen # TODO: should have been done directly above
 table(final$quimen, useNA="ifany")
 levels(final$quimen) <- list("0"="0", 
@@ -168,7 +169,11 @@ print_id(final2)
 # set zone_apl using zone_apl_imputation_data
 apl_imp <- read.csv("./zone_apl/zone_apl_imputation_data.csv")
 
-zone_apl <- final2[, c("tu99", "pol99", "tau99", "reg")]
+if (year == "2008") {
+  zone_apl <- final2[, c("tu99", "pol99", "reg")]
+} else {
+  zone_apl <- final2[, c("tu99", "pol99", "tau99", "reg")]
+}
 
 for (i in 1:length(apl_imp[,"TU99"])) {
   tu <- apl_imp[i,"TU99"]
@@ -176,15 +181,22 @@ for (i in 1:length(apl_imp[,"TU99"])) {
   tau <- apl_imp[i,"TAU99"]
   reg <- apl_imp[i,"REG"]
   #  print(c(tu,pol,tau,reg))
-  indices <- (final2["tu99"] == tu & final2["pol99"] == pol & final2["tau99"] == tau & final2["reg"] == reg)
+  
+  if (year == "2008") {
+    indices <- (final2["tu99"] == tu & final2["pol99"] == pol  & final2["reg"] == reg)
+    selection <-  (apl_imp["TU99"] == tu & apl_imp["POL99"] == pol & apl_imp["REG"] == reg)
+  } else {
+    indices <- (final2["tu99"] == tu & final2["pol99"] == pol & final2["tau99"] == tau & final2["reg"] == reg)
+    selection <-  (apl_imp["TU99"] == tu & apl_imp["POL99"] == pol & apl_imp["TAU99"] == tau & apl_imp["REG"] == reg) 
+  }
   z <- runif(sum(indices))
-  selection <-  (apl_imp["TU99"] == tu & apl_imp["POL99"] == pol & apl_imp["TAU99"] == tau & apl_imp["REG"] == reg) 
   probs <- apl_imp[selection , c("proba_zone1", "proba_zone2")]
   #  print(probs)
   final2[indices,"zone_apl"] <- 1 + (z>probs[,'proba_zone1']) + (z>(probs[,'proba_zone1']+probs[,'proba_zone2']))
+  rm(indices, probs)
 }
 
-rm(indices)
+
 # var <- names(foyer)
 #a1 <- c('f7rb', 'f7ra', 'f7gx', 'f2aa', 'f7gt', 'f2an', 'f2am', 'f7gw', 'f7gs', 'f8td', 'f7nz', 'f1br', 'f7jy', 'f7cu', 'f7xi', 'f7xo', 'f7xn', 'f7xw', 'f7xy', 'f6hj', 'f7qt', 'f7ql', 'f7qm', 'f7qd', 'f7qb', 'f7qc', 'f1ar', 'f7my', 'f3vv', 'f3vu', 'f3vt', 'f7gu', 'f3vd', 'f2al', 'f2bh', 'f7fm', 'f8uy', 'f7td', 'f7gv', 'f7is', 'f7iy', 'f7il', 'f7im', 'f7ij', 'f7ik', 'f1er', 'f7wl', 'f7wk', 'f7we', 'f6eh', 'f7la', 'f7uh', 'f7ly', 'f8wy', 'f8wx', 'f8wv', 'f7sb', 'f7sc', 'f7sd', 'f7se', 'f7sf', 'f7sh', 'f7si',  'f1dr', 'f7hs', 'f7hr', 'f7hy', 'f7hk', 'f7hj', 'f7hm', 'f7hl', 'f7ho', 'f7hn', 'f4gc', 'f4gb', 'f4ga', 'f4gg', 'f4gf', 'f4ge', 'f7vz', 'f7vy', 'f7vx', 'f7vw', 'f7xe', 'f6aa', 'f1cr', 'f7ka', 'f7ky', 'f7db', 'f7dq', 'f2da')
 #a2 <- setdiff(a1,names(foyer))
